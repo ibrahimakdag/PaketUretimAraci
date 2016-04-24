@@ -1,5 +1,4 @@
-#! /usr/bin/env python
-
+#author _ibrahimakdag_
 import tkinter as tk
 from tkinter.ttk import *
 from scapy.all import *
@@ -11,6 +10,7 @@ note = Notebook(root)
 tab1 = Frame(note, width=500, height=300)
 tab2 = Frame(note, width=500, height=300)
 tab3 = Frame(note, width=500, height=300)
+tab4 = Frame(note, width=500, height=300)
 butonE = tk.Button(root, text='Exit', command=root.destroy).pack()
 
 note.add(tab1, text="Tab One", compound=tk.TOP)
@@ -369,25 +369,175 @@ def gonderTCP():
     secenekler = int(secenek.get(1.0, 'end-1c'))
     kaynakPortadres = int(kaynakPort.get(1.0, 'end-1c'))
     hedefPortadres = int(hedefPort.get(1.0, 'end-1c'))
-    diziNumarasi = diziNo.get(1.0, 'end-1c')
-    ackNumarasi = ackNo.get(1.0, 'end-1c')
+    diziNumarasi = int(diziNo.get(1.0, 'end-1c'))
+    ackNumarasi = int(ackNo.get(1.0, 'end-1c'))
     dataOffset = dataOfseti.get(1.0, 'end-1c')
     reservedAlani = reservedT.get(1.0, 'end-1c')
     bayraklarT = bayrakT.get(1.0, 'end-1c')
-    pencereBoyutu = pencereB.get(1.0, 'end-1c')
-    checksumAlani = checksumT.get(1.0, 'end-1c')
-    urgentPointer = urgentP.get(1.0, 'end-1c')
-    seceneklerT = secenekT.get(1.0, 'end-1c')
-
+    pencereBoyutu = int(pencereB.get(1.0, 'end-1c'))
+    checksumAlani = int(checksumT.get(1.0, 'end-1c'))
+    urgentPointer = int(urgentP.get(1.0, 'end-1c'))
+    seceneklerT = int(secenekT.get(1.0, 'end-1c'))
+#dataofs=dataOffset, reserved=reservedAlani, flags=bayraklarT, options=seceneklerT
     tcp = send(Ether(src=kaynakMAC, dst=hedefMAC)/IP(version=versionN, ihl=internetBaslikU,\
 tos=servisTuru, len=toplamUzunluk, id=kimlikBilgisi, flags=bayraklar, frag=parcaNo,\
 ttl=yasamSuresi, proto=protokolNo, chksum=kontrolB, src=kaynakIPadres, dst=hedefIPadres)/TCP(sport=kaynakPortadres, dport=hedefPortadres, seq=diziNumarasi,\
-ack=ackNumarasi, dataofs=dataOffset, reserved=reservedAlani, flags=bayraklarT, window=pencereBoyutu, chksum=checksumAlani, urgptr=urgentPointer, options=seceneklerT))
+ack=ackNumarasi, window=pencereBoyutu, chksum=checksumAlani, urgptr=urgentPointer))
     if tcp:
      p.show()
 
 
 butonGonder = tk.Button(tab3, text='Gönder', command=gonderTCP).grid(row=15, sticky=tk.W)
+
+#UDP
+
+note.add(tab4, text="Tab Four")
+
+labelk = Label(tab4,text="Kaynak MAC")
+labelk.grid(row=0, sticky=tk.W)
+srcMAC1 = tk.Text(tab4, width=17, height=1)
+srcMAC1.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
+srcMAC1.grid(row=0, column=1)
+
+
+labelk = Label(tab4,text="Hedef MAC")
+labelk.grid(row=0, column=2, sticky=tk.W)
+dstMAC1 = tk.Text(tab4, width=17, height=1)
+dstMAC1.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
+dstMAC1.grid(row=0, column=3)
+#ip
+labelk = Label(tab4,text="IP versiyon")
+labelk.grid(row=2,sticky=tk.W)
+versiyon = tk.Text(tab4, width=15, height=1)
+versiyon.insert(tk.INSERT, "4")
+versiyon.grid(row=2, column=1)
+
+labelk = Label(tab4,text="Başlık uzunluğu")
+labelk.grid(row=2, column=2, sticky=tk.W)
+ibu = tk.Text(tab4, width=15, height=1)
+ibu.insert(tk.INSERT, "4")
+ibu.grid(row=2, column=3)
+
+labelk = Label(tab4,text="Hizmet tipi")
+labelk.grid(row=3,sticky=tk.W)
+servisT = tk.Text(tab4, width=15, height=1)
+servisT.insert(tk.INSERT, "4")
+servisT.grid(row=3, column=1)
+
+labelk = Label(tab4,text="Toplam uzunluk")
+labelk.grid(row=3, column=2, sticky=tk.W)
+toplamU = tk.Text(tab4, width=15, height=1)
+toplamU.insert(tk.INSERT, "4")
+toplamU.grid(row=3, column=3)
+
+labelk = Label(tab4,text="Identification")
+labelk.grid(row=4,sticky=tk.W)
+idBilgisi = tk.Text(tab4, width=15, height=1)
+idBilgisi.insert(tk.INSERT, "4")
+idBilgisi.grid(row=4, column=1)
+
+labelk = Label(tab4,text="Bayraklar")
+labelk.grid(row=4, column=2, sticky=tk.W)
+bayrak = tk.Text(tab4, width=1, height=1)
+bayrak.insert(tk.INSERT, "4")
+bayrak.grid(row=4, column=3)
+
+labelk = Label(tab4,text="Fragment ofseti")
+labelk.grid(row=5,sticky=tk.W)
+parcaN = tk.Text(tab4, width=15, height=1)
+parcaN.insert(tk.INSERT, "4")
+parcaN.grid(row=5, column=1)
+
+labelk = Label(tab4,text="Yaşam süresi")
+labelk.grid(row=5, column=2, sticky=tk.W)
+yasamS = tk.Text(tab4, width=15, height=1)
+yasamS.insert(tk.INSERT, "4")
+yasamS.grid(row=5, column=3)
+
+labelk = Label(tab4,text="Protokol")
+labelk.grid(row=6,sticky=tk.W)
+protokol = tk.Text(tab4, width=15, height=1)
+protokol.insert(tk.INSERT, "00")
+protokol.grid(row=6, column=1)
+
+labelk = Label(tab4,text="Header checksum")
+labelk.grid(row=6, column=2, sticky=tk.W)
+kontrol = tk.Text(tab4, width=15, height=1)
+kontrol.insert(tk.INSERT, "36")
+kontrol.grid(row=6, column=3)
+
+labelk = Label(tab4,text="Kaynak IP adresi")
+labelk.grid(row=7,sticky=tk.W)
+kaynakIP = tk.Text(tab4, width=15, height=1)
+kaynakIP.insert(tk.INSERT, "0.0.0.0")
+kaynakIP.grid(row=7, column=1)
+
+labelk = Label(tab4,text="Hedef IP adresi")
+labelk.grid(row=7, column=2, sticky=tk.W)
+hedefIP = tk.Text(tab4, width=15, height=1)
+hedefIP.insert(tk.INSERT, "0.0.0.0")
+hedefIP.grid(row=7, column=3)
+
+labelk = Label(tab4,text="Seçenekler")
+labelk.grid(row=8,sticky=tk.W)
+secenek = tk.Text(tab4, width=15, height=1)
+secenek.insert(tk.INSERT, "4")
+secenek.grid(row=8, column=1)
+
+#UDP
+labelk = Label(tab4,text="Kaynak Port")
+labelk.grid(row=9,sticky=tk.W)
+kaynakPortU = tk.Text(tab4, width=15, height=1)
+kaynakPortU.insert(tk.INSERT, "8080")
+kaynakPortU.grid(row=9, column=1)
+
+labelk = Label(tab4,text="Hedef Port")
+labelk.grid(row=9, column=2, sticky=tk.W)
+hedefPortU = tk.Text(tab4, width=15, height=1)
+hedefPortU.insert(tk.INSERT, "80")
+hedefPortU.grid(row=9, column=3)
+
+labelk = Label(tab4,text="Uzunluk")
+labelk.grid(row=10,sticky=tk.W)
+uzunlukU = tk.Text(tab4, width=15, height=1)
+uzunlukU.insert(tk.INSERT, "10")
+uzunlukU.grid(row=10, column=1)
+
+labelk = Label(tab4,text="Checksum")
+labelk.grid(row=10, column=2, sticky=tk.W)
+checksumU = tk.Text(tab4, width=15, height=1)
+checksumU.insert(tk.INSERT, "5")
+checksumU.grid(row=10, column=3)
+
+def gonderUDP():
+    kaynakMAC = srcMAC1.get(1.0, 'end-1c')
+    hedefMAC = dstMAC1.get(1.0, 'end-1c')
+    versionN = int(versiyon.get(1.0, 'end-1c'))
+    internetBaslikU = int(ibu.get(1.0, 'end-1c'))
+    servisTuru = int(servisT.get(1.0, 'end-1c'))
+    toplamUzunluk = int(toplamU.get(1.0, 'end-1c'))
+    kimlikBilgisi = int(idBilgisi.get(1.0, 'end-1c'))
+    bayraklar = int(bayrak.get(1.0, 1.1))	
+    parcaNo = int(parcaN.get(1.0, 'end-1c'))
+    yasamSuresi = int(yasamS.get(1.0, 'end-1c'))
+    protokolNo = int(protokol.get(1.0, 'end-1c'))
+    kontrolB = int(kontrol.get(1.0, 'end-1c'))
+    kaynakIPadres = kaynakIP.get(1.0, 1.15)
+    hedefIPadres = hedefIP.get(1.0, 1.15)
+    secenekler = int(secenek.get(1.0, 'end-1c'))
+    kaynakPortadresU = int(kaynakPortU.get(1.0, 'end-1c'))
+    hedefPortadresU = int(hedefPortU.get(1.0, 'end-1c'))
+    checksumUDP = int(checksumU.get(1.0, 'end-1c'))
+    uzunlukUDP = int(uzunlukU.get(1.0, 'end-1c'))
+
+
+    udp = send(Ether(src=kaynakMAC, dst=hedefMAC)/IP(version=versionN, ihl=internetBaslikU, tos=servisTuru, len=toplamUzunluk,\
+id=kimlikBilgisi, flags=bayraklar, frag=parcaNo, ttl=yasamSuresi, proto=protokolNo, chksum=kontrolB, src=kaynakIPadres, dst=hedefIPadres)/UDP(sport=kaynakPortadresU,\
+dport=hedefPortadresU, len=uzunlukUDP, chksum=checksumUDP))
+    if udp:
+     p.show()
+
+butonGonder = tk.Button(tab4, text='Gönder', command=gonderUDP).grid(row=15, sticky=tk.W)	 
 
 note.pack()
 root.mainloop()
