@@ -544,17 +544,32 @@ var = tk.IntVar()
 var2 = tk.IntVar()
 var3= tk.IntVar()
 def sel():
-   if(var3.get()==5 and var.get()==1):
-    note.select(tab1)
-   if(var3.get()==5 and var.get()==2):
-    note.select(tab2)
+   if(var3.get()==5):
+    R1.config(state=tk.NORMAL)
+    R2.config(state=tk.NORMAL)
+    if(var.get()==1):
+     note.select(tab1)
+     if(var2.get()==3 or var2.get()==4):
+      R3.config(state=tk.DISABLED)
+      R4.config(state=tk.DISABLED)
+      var2.set(0)
+    elif(var.get()==2):
+     R3.config(state=tk.NORMAL)
+     R4.config(state=tk.NORMAL)
+     note.select(tab2)
+    
    if(var3.get()==5 and var.get()==2 and var2.get()==3):
     note.select(tab3)
    if(var3.get()==5 and var.get()==2 and var2.get()==4):
     note.select(tab4)
    if(var3.get()==6):
-    print("in progress")
-	
+    R1.config(state=tk.DISABLED)
+    R2.config(state=tk.DISABLED)
+    R3.config(state=tk.DISABLED)
+    R4.config(state=tk.DISABLED)
+    var.set(0)
+    var2.set(0)
+    var3.set(0)
 
 R12 = Radiobutton(root, text="Ethernet", variable=var3, value=5, command=sel)
 R12.grid(row=1, sticky=tk.W)
@@ -564,16 +579,19 @@ R13.grid(row=2, sticky=tk.W)
 	
 R1 = Radiobutton(root, text="ARP", variable=var, value=1, command=sel)
 R1.grid(row=1, column=1, sticky=tk.W)
+R1.config(state=tk.DISABLED)
 
 R2 = Radiobutton(root, text="IP", variable=var, value=2, command=sel)
 R2.grid(row=2, column=1, sticky=tk.W)
+R2.config(state=tk.DISABLED)
 
 R3 = Radiobutton(root, text="TCP", variable=var2, value=3, command=sel)
 R3.grid(row=1, column=2, sticky=tk.W)
+R3.config(state=tk.DISABLED)
 
 R4 = Radiobutton(root, text="UDP", variable=var2, value=4, command=sel)
 R4.grid(row=2, column=2, sticky=tk.W)
-
+R4.config(state=tk.DISABLED)
 
 note.grid(row=0, columnspan=3)
 
