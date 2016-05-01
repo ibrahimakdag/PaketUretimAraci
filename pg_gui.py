@@ -11,9 +11,9 @@ tab1 = Frame(note, width=500, height=300)
 tab2 = Frame(note, width=500, height=300)
 tab3 = Frame(note, width=500, height=300)
 tab4 = Frame(note, width=500, height=300)
-butonE = tk.Button(root, text='Exit', command=root.destroy).pack()
+#butonE = tk.Button(root, text='Exit', command=root.destroy).pack()
 
-note.add(tab1, text="Tab One", compound=tk.TOP)
+note.add(tab1, text="ARP", compound=tk.TOP)
 
 
 label = Label(tab1,text="Kaynak MAC")
@@ -68,9 +68,10 @@ def gonderARP():
     arp = send(Ether(src=kaynakMAC, dst=hedefMAC)/ARP(op=2, psrc=kaynakPA, hwdst=hedefHA, hwsrc=kaynakHA, pdst=hedefPA))
     if arp:
      arp.show()
+	 
 butonGonder = tk.Button(tab1, text='Gönder', command=gonderARP).grid(row=6, sticky=tk.W)
 
-note.add(tab2, text="Tab Two")
+note.add(tab2, text="IP")
 
 labelk = Label(tab2,text="Kaynak MAC")
 labelk.grid(row=0, sticky=tk.W)
@@ -187,12 +188,12 @@ def gonderIP():
 	
     ip = send(Ether(src=kaynakMAC, dst=hedefMAC)/IP(version=versionN, ihl=internetBaslikU, tos=servisTuru, len=toplamUzunluk, id=kimlikBilgisi, flags=bayraklar, frag=parcaNo, ttl=yasamSuresi, proto=protokolNo, chksum=kontrolB, src=kaynakIPadres, dst=hedefIPadres))
     if ip:
-     p.show()
+     ip.show()
 
 butonGonder = tk.Button(tab2, text='Gönder', command=gonderIP).grid(row=9, sticky=tk.W)
 
 
-note.add(tab3, text="Tab Three")
+note.add(tab3, text="TCP ")
 
 labelk = Label(tab3,text="Kaynak MAC")
 labelk.grid(row=0, sticky=tk.W)
@@ -384,14 +385,14 @@ tos=servisTuru, len=toplamUzunluk, id=kimlikBilgisi, flags=bayraklar, frag=parca
 ttl=yasamSuresi, proto=protokolNo, chksum=kontrolB, src=kaynakIPadres, dst=hedefIPadres)/TCP(sport=kaynakPortadres, dport=hedefPortadres, seq=diziNumarasi,\
 ack=ackNumarasi, window=pencereBoyutu, chksum=checksumAlani, urgptr=urgentPointer))
     if tcp:
-     p.show()
+     tcp.show()
 
 
 butonGonder = tk.Button(tab3, text='Gönder', command=gonderTCP).grid(row=15, sticky=tk.W)
 
 #UDP
 
-note.add(tab4, text="Tab Four")
+note.add(tab4, text="UDP")
 
 labelk = Label(tab4,text="Kaynak MAC")
 labelk.grid(row=0, sticky=tk.W)
@@ -535,9 +536,46 @@ def gonderUDP():
 id=kimlikBilgisi, flags=bayraklar, frag=parcaNo, ttl=yasamSuresi, proto=protokolNo, chksum=kontrolB, src=kaynakIPadres, dst=hedefIPadres)/UDP(sport=kaynakPortadresU,\
 dport=hedefPortadresU, len=uzunlukUDP, chksum=checksumUDP))
     if udp:
-     p.show()
+     udp.show()
 
 butonGonder = tk.Button(tab4, text='Gönder', command=gonderUDP).grid(row=15, sticky=tk.W)	 
 
-note.pack()
+var = tk.IntVar()
+var2 = tk.IntVar()
+var3= tk.IntVar()
+def sel():
+   if(var3.get()==5 and var.get()==1):
+    note.select(tab1)
+   if(var3.get()==5 and var.get()==2):
+    note.select(tab2)
+   if(var3.get()==5 and var.get()==2 and var2.get()==3):
+    note.select(tab3)
+   if(var3.get()==5 and var.get()==2 and var2.get()==4):
+    note.select(tab4)
+   if(var3.get()==6):
+    print("in progress")
+	
+
+R12 = Radiobutton(root, text="Ethernet", variable=var3, value=5, command=sel)
+R12.grid(row=1, sticky=tk.W)
+
+R13 = Radiobutton(root, text="None", variable=var3, value=6, command=sel)
+R13.grid(row=2, sticky=tk.W)
+	
+R1 = Radiobutton(root, text="ARP", variable=var, value=1, command=sel)
+R1.grid(row=1, column=1, sticky=tk.W)
+
+R2 = Radiobutton(root, text="IP", variable=var, value=2, command=sel)
+R2.grid(row=2, column=1, sticky=tk.W)
+
+R3 = Radiobutton(root, text="TCP", variable=var2, value=3, command=sel)
+R3.grid(row=1, column=2, sticky=tk.W)
+
+R4 = Radiobutton(root, text="UDP", variable=var2, value=4, command=sel)
+R4.grid(row=2, column=2, sticky=tk.W)
+
+
+note.grid(row=0, columnspan=3)
+
+#root.grid_columnconfigure(0,weight=1)
 root.mainloop()
