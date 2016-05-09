@@ -7,11 +7,44 @@ root.geometry("800x600+300+100")
 
 note = Notebook(root)
 
+tab0 = Frame(note, width=500, height=300)
 tab1 = Frame(note, width=500, height=300)
 tab2 = Frame(note, width=500, height=300)
 tab3 = Frame(note, width=500, height=300)
 tab4 = Frame(note, width=500, height=300)
 #butonE = tk.Button(root, text='Exit', command=root.destroy).pack()
+
+note.add(tab0, text="Ethernet", compound=tk.TOP)
+
+
+label = Label(tab0,text="Kaynak MAC")
+label.grid(row=0, sticky=tk.W)
+srcMAC = tk.Entry(tab0)
+srcMAC.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
+srcMAC.grid(row=0, column=1)
+
+label = Label(tab0,text="Hedef MAC")
+label.grid(row=1,sticky=tk.W)
+dstMAC = tk.Entry(tab0)
+dstMAC.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
+dstMAC.grid(row=1, column=1)
+
+label = Label(tab0,text="Tür")
+label.grid(row=2,sticky=tk.W)
+tur = tk.Entry(tab0)
+tur.insert(tk.INSERT, "0x800")
+tur.grid(row=2, column=1)
+
+def gonderEthernet():
+    kaynakMAC = srcMAC.get(1.0,1.17)
+    hedefMAC = dstMAC.get(1.0,1.17)
+    turEther = int(float.fromhex(tur.get()))
+    
+    ether = send(Ether(src=kaynakMAC, dst=hedefMAC, type=turEther))
+    if ether:
+     ether.show()
+
+butonGonder = tk.Button(tab0, text='Gönder', command=gonderEthernet).grid(row=6, sticky=tk.W)
 
 note.add(tab1, text="ARP", compound=tk.TOP)
 
@@ -22,13 +55,11 @@ srcMAC = tk.Text(tab1, width=17, height=1)
 srcMAC.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
 srcMAC.grid(row=0, column=1)
 
-
 label = Label(tab1,text="Hedef MAC")
 label.grid(row=1,sticky=tk.W)
 dstMAC = tk.Text(tab1, width=17, height=1)
 dstMAC.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
 dstMAC.grid(row=1, column=1)
-
 
 label = Label(tab1,text="Gönderici hardware")
 label.grid(row=2, sticky=tk.W)
@@ -36,20 +67,17 @@ hwsrc = tk.Text(tab1, width=17, height=1)
 hwsrc.insert(tk.INSERT, "00:00:00:00:00:00")
 hwsrc.grid(row=2, column=1)
 
-
 label = Label(tab1,text="Gönderici protokol adresi")
 label.grid(row=3,sticky=tk.W)
 psrc = tk.Text(tab1, width=15, height=1)
 psrc.insert(tk.INSERT, "0.0.0.0")
 psrc.grid(row=3, column=1)
 
-
 label = Label(tab1,text="Hedef protokol adresi")
 label.grid(row=4,sticky=tk.W)
 pdst = tk.Text(tab1, width=15, height=1)
 pdst.insert(tk.INSERT, "0.0.0.0")
 pdst.grid(row=4, column=1)
-
 
 label = Label(tab1,text="Hedef hardware")
 label.grid(row=5,sticky=tk.W)
