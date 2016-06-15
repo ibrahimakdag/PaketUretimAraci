@@ -66,7 +66,7 @@ def mitma():
 
 def donothing():
     ikinci = tk.Toplevel()
-    l = tk.Label(ikinci, text="This is child")
+    l = tk.Label(ikinci, text="ibrahimakdag@outlook.com")
     l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
 
 def ARPpoisoning():
